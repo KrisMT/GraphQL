@@ -10,12 +10,23 @@ module.exports = {
       const response = await Links.insert(data);
       return Object.assign({id: response.insertedIds[0]}, data);
     },
+    createUser: async (root, data, {mongo: {Users}}) => {
+      const newUser = {
+        name: data.name,
+        email: data.authProvider.email,
+        password: data.authProvider.password,
+      };
+
+      const response = await Users.insert(newUser);
+      return Object.assign({id: response.insertedIds[0]}, newUser);
+    },
   },
 
   Link: {
     id: root => root._id || root.id,
   },
+  User: {
+    id: root => root._id || root.id,
+  },
 };
-
-
 
