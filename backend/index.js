@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const cors = require('cors');
 
 const schema = require('./schema');
 const connecMongo = require('./mongo-connector');
@@ -23,6 +24,7 @@ const start = async () => {
   };
 
   var app = express();
+  app.use(cors());
   app.use('/graphql', bodyParser.json(), graphqlExpress(
     buildOptions
   ));
@@ -32,7 +34,7 @@ const start = async () => {
     passHeader: `'Authorization': 'bearer token-NIL@xxx.xxx'`,
   }));
 
-  const PORT = 3000;
+  const PORT = 4000;
 
   app.listen(PORT, () => {
     console.log(`Hackernews GraphQL server running on port ${PORT}.`);

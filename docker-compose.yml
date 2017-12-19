@@ -1,36 +1,39 @@
 version: '2'
 services:
-  frontend:
-    container_name: "frontend"
-    image: krismt/alpine-node
-    ports:
-      - 3000:3000
-    volumes:
-      - './frontend:/app'
-    links:
-      - backend
-    depends_on:
-      - backend
+  #  frontend:
+  #    container_name: "frontend"
+  #    image: krismt/alpine-node
+  #    ports:
+  #      - 3000:3000
+  #    volumes:
+  #      - './frontend:/app'
+  #    links:
+  #      - "backend:backend"
+  #    depends_on:
+  #      - backend
+  #  
   backend:
     container_name: "backend"
     image: krismt/alpine-node
     ports:
-      - 4000:3000
+      - 4000:4000
     volumes:
       - './backend:/app'
     links:
-      - mongo
+      - "mongo:mongo"
     depends_on:
       - mongo
+
   monitor:
     container_name: "monitor"
     image: mongo-express
     ports:
       - 8081:8081
-    links:
-      - mongo
+        #    links:
+        #      - "mongo:mongo"
     depends_on:
       - mongo
+
   mongo:
     container_name: "mongo"
     image: krismt/alpine-mongo
