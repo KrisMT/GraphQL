@@ -1,44 +1,44 @@
 version: '2'
 services:
-  #        frontend:
-  #                container_name: "frontend"
-  #                image: krismt/alpine-node
-  #                ports:
-  #                        - 4000:3000
-  #                volumes:
-  #                        - './frontend:/app'
-  #                          #                links:
-  #                          #                        - backend
-  #                depends_on:
-  #                        - backend
-        backend:
-                container_name: "backend"
-                image: krismt/alpine-node
-                ports:
-                        - 3000:3000
-                volumes:
-                        - './backend:/app'
-                links:
-                        - mongo
-                depends_on:
-                        - mongo
-        monitor:
-                container_name: "monitor"
-                image: mongo-express
-                ports:
-                        - 8081:8081
-                links:
-                        - mongo
-                depends_on:
-                        - mongo
-        mongo:
-                container_name: "mongo"
-                image: krismt/alpine-mongo
-                environment:
-                        - MONGO_DATA_DIR=/data/db
-                        - MONGO_LOG_DIR=/dev/null
-                volumes:
-                        - './data/db:/data/db'
-                        - './import:/import'
-                ports:
-                        - 27017:27017
+  frontend:
+    container_name: "frontend"
+    image: krismt/alpine-node
+    ports:
+      - 3000:3000
+    volumes:
+      - './frontend:/app'
+    links:
+      - backend
+    depends_on:
+      - backend
+  backend:
+    container_name: "backend"
+    image: krismt/alpine-node
+    ports:
+      - 4000:3000
+    volumes:
+      - './backend:/app'
+    links:
+      - mongo
+    depends_on:
+      - mongo
+  monitor:
+    container_name: "monitor"
+    image: mongo-express
+    ports:
+      - 8081:8081
+    links:
+      - mongo
+    depends_on:
+      - mongo
+  mongo:
+    container_name: "mongo"
+    image: krismt/alpine-mongo
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - './data/db:/data/db'
+      - './import:/import'
+    ports:
+      - 27017:27017

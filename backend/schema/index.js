@@ -1,4 +1,4 @@
-const { makeExecutableSchema } = require('graphql-tools');
+const {makeExecutableSchema} = require('graphql-tools');
 
 const resolvers = require('./resolvers');
 
@@ -26,7 +26,6 @@ const typeDefs = `
     id: ID!
     name: String!
     email: String
-    password: String
     votes: [Vote!]!
   }
 
