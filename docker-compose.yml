@@ -1,17 +1,17 @@
 version: '2'
 services:
-  #  frontend:
-  #    container_name: "frontend"
-  #    image: krismt/alpine-node
-  #    ports:
-  #      - 3000:3000
-  #    volumes:
-  #      - './frontend:/app'
-  #    links:
-  #      - "backend:backend"
-  #    depends_on:
-  #      - backend
-  #  
+  frontend:
+    container_name: "frontend"
+    image: krismt/alpine-node
+    ports:
+      - 3000:3000
+    volumes:
+      - './frontend:/app'
+    links:
+      - "backend:backend"
+    depends_on:
+      - backend
+  
   backend:
     container_name: "backend"
     image: krismt/alpine-node
