@@ -1,41 +1,28 @@
 import React, { Component } from 'react';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import { Switch, Route, Link } from 'react-router-dom';
 
-class App extends Component {
+import CreateLink from './components/CreateLink';
+import LinkList from './components/LinkList';
+
+class App extends React.Component {
   render() {
-    if( this.props.allLinksQuery && this.props.allLinksQuery.loading) {
-      return <div>Loading....</div>
-    }
-
-    if( this.props.allLinksQuery && this.props.allLinksQuery.error) {
-      return <div> { this.props.allLinksQuery.error.message} </div>
-    }
-
-    const allLinks = this.props.allLinksQuery.allLinks;
-    if( this.props.allLinksQuery && this.props.allLinksQuery.allLinks ){
-      return (
-        <div className="App">
-          <header className="App-header">
-            <h1 className="App-title">Welcome to React</h1>
-          </header>
-          <ul>
-            { allLinks.map( data => ( <li key={data.id}>url:{data.url} ,description:{data.description} </li> )) }
-          </ul>
+    return (
+      <div>
+        <div>
+          <Link to='/'>Link list</Link>
+          <div>|</div>
+          <Link to='/create'>New link</Link>
         </div>
-      );
-    }
+
+        <div>
+          <Switch>
+            <Route path='/' exact component={LinkList} />
+            <Route path='/create' component={CreateLink} />
+          </Switch>
+        </div>
+      </div>
+    );
   }
 }
 
-const ALL_LINK_QUERY = gql`
-  query {
-    allLinks {
-      id
-      url
-      description
-    }
-  }
-`;
-
-export default graphql(ALL_LINK_QUERY, {name: 'allLinksQuery'})(App);
+export default App;
