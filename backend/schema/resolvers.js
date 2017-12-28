@@ -1,5 +1,7 @@
 const {ObjectID} = require('mongodb');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 module.exports = {
   Query: {
@@ -10,6 +12,7 @@ module.exports = {
 
   Mutation: {
     createLink: async (root, data, {mongo: {Links}, user}) => {
+      if( !user ) throw new Error('Unauthorize user');
       const newLink = Object.assign({postedById: user && user._id}, data);
       const response = await Links.insert(newLink);
       return Object.assign({id: response.insertedIds[0]}, newLink);
@@ -27,9 +30,12 @@ module.exports = {
     },
     signinUser: async (root, data, {mongo: {Users}}) => {
       const user = await Users.findOne({email: data.authProvider.email});
-      bcrypt.compare(data.authProvider.password, user.password);
-        return {token: `token-${user.email}`, user};
-      };
+      const correct = bcrypt.compareSync(data.authProvider.password, user.password);
+      if(correct) {
+        const token = jwt.sign({ _id: user._id}, config.secret, {expiresIn: '1h'} );
+        return {token: `Bearer ${token}`, user};
+      }
+      return {token: 'Bearer Unauthenicated', user};
     },
     createVote: async (root, data, {mongo: {Votes}, user}) => {
       const newVote = {
