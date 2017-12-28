@@ -12,12 +12,12 @@ const start = async () => {
   const mongo = await connecMongo();
 
   const buildOptions =  async (req, res) => {
-    const user = await authenticate(req, mongo.Users);
+    //const user = await authenticate(req, mongo.Users);
     return {
       context: {
         dataloaders: buildDataLoaders(mongo),
         mongo,
-        user,
+        //user,
       },
       schema,
     };
@@ -32,7 +32,7 @@ const start = async () => {
 
   app.use('/graphiql', graphiqlExpress({
     endpointURL: '/graphql',
-    passHeader: `'Authorization': 'bearer token-NIL@xxx.xxx'`,
+    //passHeader: `'Authorization': 'bearer token-NIL@xxx.xxx'`,
   }));
 
   const PORT = 4000;

@@ -1,4 +1,5 @@
 const {ObjectID} = require('mongodb');
+const bcrypt = require('bcryptjs');
 
 module.exports = {
   Query: {
@@ -14,10 +15,11 @@ module.exports = {
       return Object.assign({id: response.insertedIds[0]}, newLink);
     },
     createUser: async (root, data, {mongo: {Users}}) => {
+      const hashPassword = bcrypt.hashSync(data.authProvider.password, 10);
       const newUser = {
         name: data.name,
         email: data.authProvider.email,
-        password: data.authProvider.password,
+        password: hashPassword,
       };
 
       const response = await Users.insert(newUser);
@@ -25,7 +27,7 @@ module.exports = {
     },
     signinUser: async (root, data, {mongo: {Users}}) => {
       const user = await Users.findOne({email: data.authProvider.email});
-      if( data.authProvider.password === user.password) {
+      bcrypt.compare(data.authProvider.password, user.password);
         return {token: `token-${user.email}`, user};
       };
     },
