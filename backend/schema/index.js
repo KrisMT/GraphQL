@@ -45,6 +45,25 @@ const typeDefs = `
     link: Link!
   }
 
+  type Subscription {
+    Link(filter: LinkSubsciptionFilter): LinkSubscriptionPayload
+  }
+
+  input LinkSubsciptionFilter {
+    mutation_in: [_ModelMutationType!]
+  }
+
+  type LinkSubscriptionPayload {
+    mutation: _ModelMutationType!
+    node: Link
+  }
+
+  enum _ModelMutationType {
+    CREATED
+    UPDATED
+    DELETED
+  }
+
 `;
 
 module.exports = makeExecutableSchema({typeDefs, resolvers});

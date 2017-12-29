@@ -2,6 +2,7 @@ const {ObjectID} = require('mongodb');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const pubsub = require('../pubsub');
 
 module.exports = {
   Query: {
@@ -15,7 +16,9 @@ module.exports = {
       if( !user ) throw new Error('Unauthorize user');
       const newLink = Object.assign({postedById: user && user._id}, data);
       const response = await Links.insert(newLink);
-      return Object.assign({id: response.insertedIds[0]}, newLink);
+      newLink.id = response.insertedIds[0];
+      pubsub.publish('Link', {Link: {mutation: 'CREATED', node: newLink} });
+      return newLink;
     },
     createUser: async (root, data, {mongo: {Users}}) => {
       const hashPassword = bcrypt.hashSync(data.authProvider.password, 10);
@@ -44,6 +47,12 @@ module.exports = {
       };
       const response = await Votes.insert(newVote);
       return Object.assign({id: response.insertedIds[0]}, newVote);
+    },
+  },
+
+  Subscription: {
+    Link: {
+      subscribe: () => pubsub.asyncIterator('Link'),
     },
   },
 

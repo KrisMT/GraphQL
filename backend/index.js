@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const cors = require('cors');
+const { execute, subscribe } = require('graphql');
+const { createServer } = require('http');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 
 const schema = require('./schema');
 const connecMongo = require('./mongo-connector');
@@ -24,6 +27,8 @@ const start = async () => {
   };
 
   var app = express();
+  const PORT = 4000;
+
   app.use(cors());
   app.use(bodyParser.urlencoded({ extended: false}));
   app.use('/graphql', bodyParser.json(), graphqlExpress(
@@ -31,12 +36,18 @@ const start = async () => {
   ));
 
   app.use('/graphiql', graphiqlExpress({
-    endpointURL: '/graphql'
+    endpointURL: '/graphql',
+    subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`,
   }));
 
-  const PORT = 4000;
+  const server = createServer(app);
 
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
+    SubscriptionServer.create(
+      { execute, subscribe, schema },
+      { server, path: '/subscriptions' },
+    );
+
     console.log(`Hackernews GraphQL server running on port ${PORT}.`);
   });
 }
