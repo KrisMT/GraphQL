@@ -17,7 +17,7 @@ const batchVotesBylinkId = async (Votes, keys) => {
   const gs = _.groupBy(documents, 'linkId');
 
   //order by keys
-  return keys.map(key => (gs[key]? gs[key] : []) );
+  return keys.map(key =>  gs[key] || [] );
 }
 
 const batchVotesByuserId = async (Votes, keys) => {
@@ -28,7 +28,7 @@ const batchVotesByuserId = async (Votes, keys) => {
   const gs = _.groupBy(documents, 'userId');
 
   //order by keys
-  return keys.map(key => (gs[key]? gs[key] : []) );
+  return keys.map(key =>  gs[key] || [] );
 }
 
 module.exports = ({Users, Links, Votes}) => ({
