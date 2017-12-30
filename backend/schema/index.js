@@ -11,8 +11,14 @@ const typeDefs = `
     votes: [Vote!]!
   }
 
+  input LinkFilter {
+    OR: [LinkFilter!]
+    description_contains: String
+    url_contains: String
+  }
+
   type Query {
-    allLinks: [Link!]!
+    allLinks(filter: LinkFilter, skip: Int, limit: Int): [Link!]!
   }
 
   type Mutation {

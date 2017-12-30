@@ -4,10 +4,30 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const pubsub = require('../pubsub');
 
+const buildFilters = ({OR = [], description_contains, url_contains}) => {
+  const filter = (description_contains || url_contains) ? {} : null;
+  if( description_contains ) {
+    filter.description = {$regex: `.*${description_contains}.*`};
+  }
+  if( url_contains ) {
+    filter.url = {$regex: `.*${url_contains}.*`};
+  }
+
+  let filters = filter ? [filter] : [];
+  for( let i = 0; i < OR.length; i++ ) {
+    filters = filters.concat(buildFilters(OR[i]));
+  }
+  return filters;
+}
+
 module.exports = {
   Query: {
-    allLinks: async (root, data, {mongo: {Links}}) => {
-      return await Links.find({}).toArray();
+    allLinks: async (root, {filter, skip, limit}, {mongo: {Links}}) => {
+      const query = filter ? {$or: buildFilters(filter)} : {};
+      const cursor = Links.find(query);
+      if( limit ) cursor.limit(limit);
+      if( skip ) cursor.skip(skip);
+      return cursor.toArray();
     },
   },
 
