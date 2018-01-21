@@ -72,7 +72,10 @@ module.exports = {
 
   Subscription: {
     Link: {
-      subscribe: () => pubsub.asyncIterator('Link'),
+      subscribe: async () => {
+        console.log("PUBSUB*********");
+        pubsub.asyncIterator('Link')
+      },
     },
   },
 

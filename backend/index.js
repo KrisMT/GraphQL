@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
+const { graphqlExpress } = require('apollo-server-express');
+const  expressPlayground  = require('graphql-playground-middleware-express').default;
 const cors = require('cors');
 const { execute, subscribe } = require('graphql');
 const { createServer } = require('http');
@@ -35,8 +36,8 @@ const start = async () => {
     buildOptions
   ));
 
-  app.use('/graphiql', graphiqlExpress({
-    endpointURL: '/graphql',
+  app.use('/playground', expressPlayground({
+    endpoint: '/graphql',
     subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`,
   }));
 
