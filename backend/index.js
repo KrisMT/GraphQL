@@ -38,7 +38,7 @@ const start = async () => {
 
   app.use('/playground', expressPlayground({
     endpoint: '/graphql',
-    subscriptionsEndpoint: `ws://localhost:${PORT}/subscriptions`,
+    subscriptionsEndpoint: `ws://localhost:${PORT}`,
   }));
 
   const server = createServer(app);
@@ -46,7 +46,7 @@ const start = async () => {
   server.listen(PORT, () => {
     SubscriptionServer.create(
       { execute, subscribe, schema },
-      { server, path: '/subscriptions' },
+      { server, path: '/graphql' },
     );
 
     console.log(`Hackernews GraphQL server running on port ${PORT}.`);

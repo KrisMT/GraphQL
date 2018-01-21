@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const pubsub = require('../pubsub');
+const { withFilter } = require('graphql-subscriptions');
 
 const buildFilters = ({OR = [], description_contains, url_contains}) => {
   const filter = (description_contains || url_contains) ? {} : null;
@@ -34,10 +35,11 @@ module.exports = {
   Mutation: {
     createLink: async (root, data, {mongo: {Links}, user}) => {
       if( !user ) throw new Error('Unauthorize user');
-      const newLink = Object.assign({postedById: user && user._id}, data);
+      const newLink = Object.assign({postedBy: user && user._id}, data);
       const response = await Links.insert(newLink);
       newLink.id = response.insertedIds[0];
       pubsub.publish('Link', {Link: {mutation: 'CREATED', node: newLink} });
+      console.log(newLink);
       return newLink;
     },
     createUser: async (root, data, {mongo: {Users}}) => {
@@ -72,17 +74,22 @@ module.exports = {
 
   Subscription: {
     Link: {
-      subscribe: async () => {
-        console.log("PUBSUB*********");
-        pubsub.asyncIterator('Link')
-      },
+      subscribe: withFilter(
+        () => {
+          return pubsub.asyncIterator('Link')
+        },
+        (payload, args) => {
+          console.log(payload);
+          return  true;
+        }),
     },
   },
 
   Link: {
     id: root => root._id || root.id,
-    postedBy: async ({postedById}, data, {dataloaders: {userLoader}}) => {
-      return await userLoader.load(postedById);
+    postedBy: async ({postedBy}, data, {dataloaders: {userLoader}}) => {
+      console.log("postedBy on Link");
+      return await userLoader.load(postedBy);
     },
     votes: async ({_id}, data, {dataloaders: {voteBylinkIdLoader}}) => {
       return await voteBylinkIdLoader.load(_id);
