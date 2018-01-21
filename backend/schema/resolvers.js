@@ -38,8 +38,7 @@ module.exports = {
       const newLink = Object.assign({postedBy: user && user._id}, data);
       const response = await Links.insert(newLink);
       newLink.id = response.insertedIds[0];
-      pubsub.publish('Link', {Link: {mutation: 'CREATED', node: newLink} });
-      console.log(newLink);
+      pubsub.publish('Link', {Link: {mutation: ['CREATED'], node: newLink} });
       return newLink;
     },
     createUser: async (root, data, {mongo: {Users}}) => {
@@ -79,7 +78,6 @@ module.exports = {
           return pubsub.asyncIterator('Link')
         },
         (payload, args) => {
-          console.log(payload);
           return  true;
         }),
     },
@@ -88,7 +86,6 @@ module.exports = {
   Link: {
     id: root => root._id || root.id,
     postedBy: async ({postedBy}, data, {dataloaders: {userLoader}}) => {
-      console.log("postedBy on Link");
       return await userLoader.load(postedBy);
     },
     votes: async ({_id}, data, {dataloaders: {voteBylinkIdLoader}}) => {

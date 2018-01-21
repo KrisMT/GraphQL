@@ -52,7 +52,7 @@ const typeDefs = `
   }
 
   type Subscription {
-    Link(filter: LinkSubsciptionFilter): LinkSubscriptionPayload
+    Link(filter: LinkSubsciptionFilter): LinkSubscriptionPayload!
   }
 
   input LinkSubsciptionFilter {
@@ -60,8 +60,8 @@ const typeDefs = `
   }
 
   type LinkSubscriptionPayload {
-    mutation: _ModelMutationType!
-    node: Link
+    mutation: [_ModelMutationType!]!
+    node: Link!
   }
 
   enum _ModelMutationType {

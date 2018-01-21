@@ -38,14 +38,22 @@ const start = async () => {
 
   app.use('/playground', expressPlayground({
     endpoint: '/graphql',
-    subscriptionsEndpoint: `ws://localhost:${PORT}`,
+    subscriptionsEndpoint: `ws://localhost:${PORT}/graphql`,
   }));
 
   const server = createServer(app);
 
+  const subscriptionBuildOptions = async (connectionParams,webSocket) =>
+  {
+    return {
+      dataloaders: buildDataLoaders(mongo),
+      mongo,
+    }
+  }
+
   server.listen(PORT, () => {
     SubscriptionServer.create(
-      { execute, subscribe, schema },
+      { execute, subscribe, schema, onConnect: subscriptionBuildOptions },
       { server, path: '/graphql' },
     );
 
