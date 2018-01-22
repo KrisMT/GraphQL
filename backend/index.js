@@ -14,12 +14,14 @@ const buildDataLoaders = require('./dataloaders');
 
 const start = async () => {
   const mongo = await connecMongo();
+  const dataloaders = await buildDataLoaders(mongo);
 
   const buildOptions =  async (req, res) => {
-    const user = await authenticate(req, mongo.Users);
+    const authorization = { authorization: req.headers.authorization };
+    const user = await authenticate(authorization, mongo.Users);
     return {
       context: {
-        dataloaders: buildDataLoaders(mongo),
+        dataloaders: dataloaders,
         mongo,
         user,
       },
@@ -45,9 +47,12 @@ const start = async () => {
 
   const subscriptionBuildOptions = async (connectionParams,webSocket) =>
   {
+    const authorization = { authorization: connectionParams.authorization };
+    const user = await authenticate(authorization, mongo.Users);
     return {
-      dataloaders: buildDataLoaders(mongo),
+      dataloaders: dataloaders,
       mongo,
+      user,
     }
   }
 

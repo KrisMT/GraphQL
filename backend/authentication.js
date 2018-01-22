@@ -4,7 +4,7 @@ const {ObjectID} = require('mongodb');
 
 const HEADER_REGEX = /Bearer (.*)$/;
 
-const authenticate = async ({headers: {authorization}}, Users) => {
+const authenticate = async ({authorization}, Users) => {
   const token = authorization && HEADER_REGEX.exec(authorization)[1];
   var decoded = '';
   try {
