@@ -19,7 +19,7 @@
     "express": "^4.16.2",
     "graphql": "^0.11.7",
     "graphql-playground-middleware-express": "^1.5.3",
-    "graphql-subscriptions": "^0.5.6",
+    "graphql-redis-subscriptions": "^1.4.0",
     "graphql-tools": "^2.12.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
