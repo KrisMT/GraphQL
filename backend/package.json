@@ -23,7 +23,7 @@
     "graphql-tools": "^2.12.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
-    "mongodb": "^2.2.3",
+    "mongodb": "^2.2.34",
     "subscriptions-transport-ws": "^0.9.4"
   }
 }
