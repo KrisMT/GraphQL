@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   frontend:
     container_name: "frontend"
@@ -7,10 +7,10 @@ services:
       - 3000:3000
     volumes:
       - './frontend:/app'
-    links:
-      - "backend:backend"
     depends_on:
       - backend
+    networks:
+      - webnet
   
   backend:
     container_name: "backend"
@@ -19,21 +19,21 @@ services:
       - 4000:4000
     volumes:
       - './backend:/app'
-    links:
-      - "mongo:mongo"
     depends_on:
       - mongo
       - redis
+    networks:
+      - webnet
 
   monitor:
     container_name: "monitor"
     image: mongo-express
     ports:
       - 8081:8081
-    links:
-      - "mongo:mongo"
     depends_on:
       - mongo
+    networks:
+      - webnet
 
   mongo:
     container_name: "mongo"
@@ -46,8 +46,16 @@ services:
       - './import:/import'
     ports:
       - 27017:27017
+    networks:
+      - webnet
+
   redis:
     container_name: "redis"
     image: redis:alpine
     ports:
       - 6379:6379
+    networks:
+      - webnet
+
+networks:
+    webnet:
