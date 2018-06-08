@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
@@ -53,15 +54,49 @@ const ExchangeRates = () => (
   </Query>
 );
 
+class HomeScreen extends React.Component {
+  render() {
+    return (
+      <View style={styles.container} >
+        <Text>Home Screen</Text>
+        <Button
+          title="Go to About"
+          onPress={() => this.props.navigation.navigate('About')}
+        />
+      </View>
+    )
+  }
+}
+
+class AboutScreen extends React.Component {
+  render() {
+    return (
+      <View style={styles.container} >
+        <Text>About Screen</Text>
+        <Button
+          title="Go to Home"
+          onPress={() => this.props.navigation.navigate('Home')}
+        />
+      </View>
+    )
+  }
+}
+
+const RootStack = createStackNavigator(
+  {
+    Home: { screen: HomeScreen },
+    About: { screen: AboutScreen },
+  },
+  {
+    initialRouteName: 'Home',
+  }
+);
+
 export default class App extends React.Component {
   render() {
     return (
       <ApolloProvider client={client} >
-        <View style={styles.container}>
-          <Text>Open up App.js to start working on your app!</Text>
-          <Text>Open up App.js to start working on your app!</Text>
-          <ExchangeRates />
-        </View>
+        <RootStack />
       </ApolloProvider>
     );
   }
@@ -70,8 +105,19 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  route: {
+    color: '#701010',
+    fontSize: 40
+  },
+  routeLink: {
+    color: '#0000FF'
+  },
+  routeContainer: {
+    flex: 1,
+    justifyContent: 'center'
   },
 });
