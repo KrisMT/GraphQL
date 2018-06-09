@@ -4,3 +4,4 @@
 /frontend/package-lock.json
 /backend/package-lock.json
 .DS_Store
+/native/credentials

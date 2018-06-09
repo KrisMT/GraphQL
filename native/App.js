@@ -11,6 +11,8 @@ import { ApolloProvider } from 'react-apollo';
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 
+import RootRoute from './routes';
+
 const client = new ApolloClient({
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
@@ -54,49 +56,11 @@ const ExchangeRates = () => (
   </Query>
 );
 
-class HomeScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container} >
-        <Text>Home Screen</Text>
-        <Button
-          title="Go to About"
-          onPress={() => this.props.navigation.navigate('About')}
-        />
-      </View>
-    )
-  }
-}
-
-class AboutScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container} >
-        <Text>About Screen</Text>
-        <Button
-          title="Go to Home"
-          onPress={() => this.props.navigation.navigate('Home')}
-        />
-      </View>
-    )
-  }
-}
-
-const RootStack = createStackNavigator(
-  {
-    Home: { screen: HomeScreen },
-    About: { screen: AboutScreen },
-  },
-  {
-    initialRouteName: 'Home',
-  }
-);
-
 export default class App extends React.Component {
   render() {
     return (
       <ApolloProvider client={client} >
-        <RootStack />
+        <RootRoute />
       </ApolloProvider>
     );
   }
