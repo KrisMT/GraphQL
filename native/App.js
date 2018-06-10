@@ -25,7 +25,7 @@ const client = new ApolloClient({
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
     new HttpLink({
-      uri: 'https://w5xlvm3vzz.lp.gql.zone/graphql',
+      uri: 'http://10.91.34.133:4000/graphql',
       credentials: 'same-origin'
     })
   ]),
@@ -36,9 +36,10 @@ const ExchangeRates = () => (
   <Query
     query={gql`
       {
-        rates(currency: "USD") {
-          currency
-          rate
+        allLinks
+        {
+          url
+          description
         }
       }
     `}
@@ -47,9 +48,9 @@ const ExchangeRates = () => (
       if (loading) return <Text>Loading...</Text>;
       if (error) return <Text>Error :(</Text>;
 
-      return data.rates.map(({ currency, rate }) => (
-        <Text key={currency}>
-          {`${currency}: ${rate}`}
+      return data.allLinks.map(({ url, description }) => (
+        <Text key={url}>
+          {`${url}: ${description}`}
         </Text>
       ));
     }}

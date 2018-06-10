@@ -1,16 +1,16 @@
 version: '3'
 services:
-  frontend:
-    container_name: "frontend"
-    image: krismt/alpine-node
-    ports:
-      - 3000:3000
-    volumes:
-      - './frontend:/app'
-    depends_on:
-      - backend
-    networks:
-      - webnet
+  #  frontend:
+  #    container_name: "frontend"
+  #    image: krismt/alpine-node
+  #    ports:
+  #      - 3000:3000
+  #    volumes:
+  #      - './frontend:/app'
+  #    depends_on:
+  #      - backend
+  #    networks:
+  #      - webnet
   
   backend:
     container_name: "backend"
