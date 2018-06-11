@@ -1,4 +1,7 @@
 import React from 'react';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+
 import {
   View,
   Text,
@@ -10,6 +13,14 @@ import {
   BarCodeScanner,
   Permissions,
 } from 'expo';
+
+const CHECK_STORE_MUTATION = gql`
+  mutation checkStoreQR($UPQR: String!, $CPEQR: String!, $DATE: String!, $Location: String!) {
+    checkStoreQR(UPQR: $UPQR, CPEQR: $CPEQR, date: $DATE, location: $Location) {
+      id
+    }
+  }
+`;
 
 class CheckStoreScreen extends React.Component {
   static navigationOptions = {
@@ -59,10 +70,18 @@ class CheckStoreScreen extends React.Component {
         <View style={styles.container}>
           <Button title={strButtonTitle} onPress={this._toogleQR} />
           <View style={{flex: 1}}>
-            <BarCodeScanner
-              onBarCodeRead={this._handleBarCodeRead}
-              style={StyleSheet.absoluteFill}
-            />
+            <Mutation
+              mutation={CHECK_STORE_MUTATION}
+              update={(cache, { data: { checkStoreQR } }) => {
+              }}
+            >
+            {checkStoreQR => (
+              <BarCodeScanner
+                onBarCodeRead={this._handleBarCodeRead}
+                style={StyleSheet.absoluteFill}
+              />
+            )}
+          </Mutation>
           </View>
         </View>
       );

@@ -8,10 +8,25 @@ import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import { ApolloLink } from 'apollo-link';
 import { ApolloProvider } from 'react-apollo';
-import { Query } from "react-apollo";
 import gql from "graphql-tag";
 
+import {
+  SecureStore,
+} from 'expo';
+
 import RootRoute from './routes';
+
+const authLink = new ApolloLink((operation, forward) => {
+  const token = SecureStore.getItemAsync('userToken') || null;
+  console.log(`token: ${token}`);
+  operation.setContext(({ headers = {} }) => (
+    headers: {
+        ...headers,
+        authorization: token,
+    }));
+
+  return forward(operation);
+});
 
 const client = new ApolloClient({
   link: ApolloLink.from([
@@ -22,40 +37,17 @@ const client = new ApolloClient({
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
           ),
         );
+      if (networkError && networkError.statusCode === 401) SecureStore.deleteItemAsync('userToken');
       if (networkError) console.log(`[Network error]: ${networkError}`);
     }),
+    authLink,
     new HttpLink({
-      uri: 'http://10.91.34.133:4000/graphql',
+      uri: 'http://10.240.48.27:4000/graphql',
       credentials: 'same-origin'
-    })
+    }),
   ]),
   cache: new InMemoryCache()
 });
-
-const ExchangeRates = () => (
-  <Query
-    query={gql`
-      {
-        allLinks
-        {
-          url
-          description
-        }
-      }
-    `}
-  >
-    {({ loading, error, data }) => {
-      if (loading) return <Text>Loading...</Text>;
-      if (error) return <Text>Error :(</Text>;
-
-      return data.allLinks.map(({ url, description }) => (
-        <Text key={url}>
-          {`${url}: ${description}`}
-        </Text>
-      ));
-    }}
-  </Query>
-);
 
 export default class App extends React.Component {
   render() {
@@ -66,23 +58,3 @@ export default class App extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  route: {
-    color: '#701010',
-    fontSize: 40
-  },
-  routeLink: {
-    color: '#0000FF'
-  },
-  routeContainer: {
-    flex: 1,
-    justifyContent: 'center'
-  },
-});

@@ -4,10 +4,12 @@ import {
   StatusBar,
 } from 'react-native';
 
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+
 import {
   SecureStore,
 } from 'expo';
-
 
 class SignOutScreen extends React.Component {
   constructor(props) {
