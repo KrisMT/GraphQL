@@ -3,12 +3,79 @@ const {makeExecutableSchema} = require('graphql-tools');
 const resolvers = require('./resolvers');
 
 const typeDefs = `
+  type Query {
+    allLinks(filter: LinkFilter, skip: Int, limit: Int): [Link!]!
+    allLocations: [Location!]!
+  }
+
+  type Mutation {
+    createLink(url: String!, description: String!): Link
+
+    createUser(name: String!, authProvider: AUTH_PROVIDER_EMAIL!): User
+    updateUser(userId: ID!, name: String, authProvider: AUTH_PROVIDER_EMAIL!): User
+    removeUser(userId: ID!): String
+    signinUser(authProvider: AUTH_PROVIDER_EMAIL): SigninPayload!
+
+    createLocation(name: String!): Location
+    updateLocation(locationId: ID!, name: String): Location
+    removeLocation(locationId: ID!): String
+
+    createGood(qrcode: QR_PROVIDER, goodname: String, startdate: String): Good
+    updateGood(goodId: ID!, qrcode: QR_PROVIDER, name: String, income: String): Good
+
+    createCheck(qrcode: QR_PROVIDER, locationId: ID!, date: String): Check
+  }
+
+  type Subscription {
+    Link(filter: LinkSubsciptionFilter): LinkSubscriptionPayload!
+  }
+
   type Link {
     id: ID!
     url: String!
     description: String!
     postedBy: User
-    votes: [Vote!]!
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String
+    status: USER_STATUS
+    checks: [Check!]!
+  }
+
+  type Location {
+    id: ID!
+    name: String
+    checks: [Check!]!
+  }
+
+  type Good {
+    id: ID!
+    upcode: String
+    cpecode: String
+    name: String!
+    income: String!
+    checks: [Check!]!
+  }
+
+  type Check {
+    id: ID!
+    good: Good!
+    location: Location!
+    user: User
+    checkDate: String
+  }
+
+  type SigninPayload {
+    token: String
+    user: User
+  }
+
+  input QR_PROVIDER {
+    upcode: String
+    cpecode: String
   }
 
   input LinkFilter {
@@ -17,42 +84,9 @@ const typeDefs = `
     url_contains: String
   }
 
-  type Query {
-    allLinks(filter: LinkFilter, skip: Int, limit: Int): [Link!]!
-  }
-
-  type Mutation {
-    createLink(url: String!, description: String!): Link
-    createVote(linkId: ID!): Vote
-    createUser(name: String!, authProvider: AUTH_PROVIDER_EMAIL!): User
-    signinUser(authProvider: AUTH_PROVIDER_EMAIL): SigninPayload!
-  }
-
-  type User {
-    id: ID!
-    name: String!
-    email: String
-    votes: [Vote!]!
-  }
-
   input AUTH_PROVIDER_EMAIL {
     email: String!
     password: String!
-  }
-
-  type SigninPayload {
-    token: String
-    user: User
-  }
-
-  type Vote {
-    id: ID!
-    user: User!
-    link: Link!
-  }
-
-  type Subscription {
-    Link(filter: LinkSubsciptionFilter): LinkSubscriptionPayload!
   }
 
   input LinkSubsciptionFilter {
@@ -68,6 +102,11 @@ const typeDefs = `
     CREATED
     UPDATED
     DELETED
+  }
+
+  enum USER_STATUS {
+    ADMIN
+    USER
   }
 
 `;

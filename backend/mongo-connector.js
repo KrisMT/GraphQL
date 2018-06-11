@@ -15,6 +15,8 @@ module.exports = async () => {
   return {
     Links: db.collection('links'),
     Users: db.collection('users'),
-    Votes: db.collection('votes'),
+    Checks: db.collection('checks'),
+    Goods: db.collection('goods'),
+    Locations: db.collection('locations'),
   }
 };

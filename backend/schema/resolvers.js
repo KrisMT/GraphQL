@@ -30,6 +30,9 @@ module.exports = {
       if( skip ) cursor.skip(skip);
       return cursor.toArray();
     },
+    allLocations: async (root, data, {mongo: {Locations}}) => {
+      return await Locations.find({}).toArray();
+    },
   },
 
   Mutation: {
@@ -61,13 +64,42 @@ module.exports = {
       }
       return {token: 'Bearer Unauthenicated', user};
     },
-    createVote: async (root, data, {mongo: {Votes}, user}) => {
-      const newVote = {
-        userId: user && user._id,
-        linkId: new ObjectID(data.linkId),
+    createLocation: async (root, data, {mongo: {Locations}}) => {
+      const newLocation = {
+        name: data.name
       };
-      const response = await Votes.insert(newVote);
-      return Object.assign({id: response.insertedIds[0]}, newVote);
+      const response = await Locations.insert(newLocation);
+      return Object.assign({id: response.insertedIds[0]}, newLocation);
+    },
+    createGood: async (root, data, {mongo: {Goods}}) => {
+      const newGood = {
+        upcode: data.qrcode.upcode,
+        cpecode: data.qrcode.cpecode,
+        name: data.goodname,
+        income: data.startdate,
+      };
+      const response = await Goods.insert(newGood);
+      return Object.assign({id: response.insertedIds[0]}, newGood);
+    },
+    createCheck: async (root, data, {mongo: {Checks, Goods}, user}) => {
+      if( !user ) throw new Error('Unauthorize user');
+      let goodId;
+      await Goods.findOne({$or: [
+        {upcode: data.qrcode.upcode},
+        {cpecode: data.qrcode.cpecode}
+      ]}).then( res => {
+        goodId = res._id;
+      });
+
+      const newCheck = {
+        good: goodId,
+        location: data.locationId,
+        user: user && user._id,
+        checkDate: data.date,
+      };
+
+      const response = await Checks.insert(newCheck);
+      return Object.assign({id: response.insertedIds[0]}, newCheck);
     },
   },
 
@@ -88,24 +120,18 @@ module.exports = {
     postedBy: async ({postedBy}, data, {dataloaders: {userLoader}}) => {
       return await userLoader.load(postedBy);
     },
-    votes: async ({_id}, data, {dataloaders: {voteBylinkIdLoader}}) => {
-      return await voteBylinkIdLoader.load(_id);
-    },
+    //votes: async ({_id}, data, {dataloaders: {voteBylinkIdLoader}}) => {
+    //  return await voteBylinkIdLoader.load(_id);
+    //},
   },
   User: {
     id: root => root._id || root.id,
-    votes: async ({_id}, data, {dataloaders: {voteByuserIdLoader}}) => {
-      return await voteByuserIdLoader.load(_id);
-    },
+    //votes: async ({_id}, data, {dataloaders: {voteByuserIdLoader}}) => {
+    //  return await voteByuserIdLoader.load(_id);
+    //},
   },
-  Vote: {
+  Location: {
     id: root => root._id || root.id,
-    user: async ({userId}, data, {dataloaders: {userLoader}}) => {
-      return await userLoader.load(userId);
-    },
-    link: async ({linkId}, data, {dataloaders: {linkLoader}}) => {
-      return await linkLoader.load(linkId);
-    },
   },
 };
 
